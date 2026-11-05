@@ -1,0 +1,5 @@
+# Interne werkbestanden niet publiceren
+BRIEF_*.md
+.DS_Store
+Thumbs.db
+desktop.ini

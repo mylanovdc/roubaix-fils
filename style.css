@@ -1,0 +1,444 @@
+/* Roubaix & Fils — landingspagina */
+
+@font-face { font-family: "DM Serif Display"; src: url(assets/fonts/dmserif-400.woff2) format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Serif Display"; src: url(assets/fonts/dmserif-400i.woff2) format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url(assets/fonts/spacegrotesk-var.woff2) format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+
+:root {
+  --bg: #24131F;        /* Midnight Violet */
+  --plum: #3A1F33;      /* Deep Plum */
+  --mauve: #A86B94;     /* Dusty Mauve (opgelegd) */
+  --ink: #EFE8E4;       /* Parchment */
+  --camel: #B08D57;     /* Camel */
+  --black: #141013;
+  --muted: rgb(239 232 228 / .72);
+  --line: rgb(239 232 228 / .14);
+
+  --serif: "DM Serif Display", Georgia, serif;
+  --sans: "Space Grotesk", system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(.22, 1, .36, 1);     /* zacht uitlopen */
+  --ease-expo: cubic-bezier(.16, 1, .3, 1);     /* woord-reveals */
+  --ease-curtain: cubic-bezier(.77, 0, .175, 1); /* gordijn / clip-path */
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --max: 1320px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--sans);
+  -webkit-font-smoothing: antialiased; overflow-x: clip;
+}
+img, video { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+em { font-style: italic; color: var(--mauve); }
+p { margin: 0 0 1em; }
+:focus-visible { outline: 2px solid var(--camel); outline-offset: 3px; }
+::selection { background: var(--mauve); color: var(--black); }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 1rem; top: -4rem; z-index: 300; padding: .75rem 1rem; background: var(--ink); color: var(--black); }
+.skip:focus { top: 1rem; }
+
+.kicker {
+  font: 500 .8125rem/1.2 var(--sans); letter-spacing: .22em; text-transform: uppercase;
+  color: var(--camel); margin-bottom: 1.25rem;
+}
+.h2 {
+  font: 400 clamp(2.5rem, 5.2vw, 4.75rem)/1.02 var(--serif);
+  letter-spacing: -.015em; margin: 0 0 1.5rem; text-wrap: balance;
+}
+.small { font-size: .875rem; color: var(--muted); }
+
+/* ---------- Sfeerlagen: korrel + rook-cursor ----------
+   Performance: korrel staat stil (eigen laag, nooit opnieuw getekend),
+   canvas zonder mix-blend-mode (anders wordt de hele pagina elk frame geblend). */
+.grain {
+  position: fixed; inset: 0; z-index: 150; pointer-events: none;
+  background: url(assets/grain.webp); opacity: .07; transform: translateZ(0);
+}
+.smoke { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 40; pointer-events: none; }
+
+/* ---------- Intro-gordijn (1× per sessie) ---------- */
+.intro { display: none; }
+.intro-on { overflow: hidden; }
+.intro-on .intro {
+  display: grid; place-items: center; position: fixed; inset: 0; z-index: 200;
+  background: var(--black); cursor: pointer;
+  clip-path: inset(0 0 0 0); transition: clip-path 1.05s var(--ease-curtain);
+}
+.intro-out .intro { clip-path: inset(0 0 100% 0); }
+.intro__line { margin: 0; padding: 0 var(--gutter); text-align: center; font: 400 clamp(2.75rem, 9vw, 8rem)/1 var(--serif); letter-spacing: -.02em; }
+.intro__line > * { display: inline-block; opacity: 0; translate: 0 .35em; filter: blur(12px); animation: introWord 1s var(--ease-expo) forwards; }
+.intro__line > :nth-child(1) { animation-delay: .15s; }
+.intro__line > :nth-child(2) { animation-delay: .4s; }
+.intro__line > :nth-child(3) { animation-delay: .75s; }
+@keyframes introWord { to { opacity: 1; translate: 0 0; filter: blur(0); } }
+.intro__brand {
+  position: absolute; bottom: 2.5rem; left: 50%; translate: -50% 0;
+  font: 500 .75rem/1 var(--sans); letter-spacing: .4em; text-transform: uppercase; color: var(--camel);
+  opacity: 0; animation: fadeIn 1s var(--ease-out) 1.2s forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* ---------- Woord-masker (titels) ---------- */
+.js .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 .06em .14em; margin: 0 -.06em -.14em; }
+.js .wi {
+  display: inline-block; translate: 0 115%; rotate: 7deg; transform-origin: 0 100%;
+  transition: translate 1.15s var(--ease-expo), rotate 1.15s var(--ease-expo);
+  transition-delay: calc(var(--base, 0ms) + var(--wi, 0) * 65ms);
+}
+.hero-in .hero__title .wi, .reveal-words.in .wi { translate: 0 0; rotate: 0deg; }
+
+/* ---------- Algemene reveal ---------- */
+.js .reveal {
+  opacity: 0; translate: 0 26px; filter: blur(6px);
+  transition: opacity .9s var(--ease-out), translate .9s var(--ease-out), filter .9s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * .1s);
+}
+.js .reveal.in { opacity: 1; translate: 0 0; filter: blur(0); }
+
+/* ---------- Knop: magnetisch + vulling van onder ---------- */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+  padding: .95rem 1.75rem; border-radius: 0;
+  background: var(--mauve); color: var(--black); text-decoration: none;
+  font: 600 .8125rem/1 var(--sans); letter-spacing: .18em; text-transform: uppercase;
+  transform: translate(var(--tx, 0px), var(--ty, 0px));
+  transition: transform .45s var(--ease-out);
+}
+.btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink);
+  clip-path: inset(100% 0 0 0); transition: clip-path .5s var(--ease-curtain);
+}
+.btn:hover::before { clip-path: inset(0 0 0 0); }
+.btn:active { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(.97); transition-duration: .12s; }
+.btn--sm { min-height: 44px; padding: .8rem 1.1rem; font-size: .75rem; }
+
+/* ---------- Navigatie ---------- */
+.nav {
+  position: fixed; inset: 0 0 auto; z-index: 50;
+  display: flex; align-items: center; gap: 2rem;
+  padding: .9rem var(--gutter);
+  transition: background-color .35s var(--ease-out), border-color .35s var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+.nav.is-solid { background: rgb(36 19 31 / .94); border-color: var(--line); }
+.nav__logo { font: 400 1.75rem/1 var(--serif); text-decoration: none; margin-right: auto; }
+.nav__links { display: flex; gap: 2rem; list-style: none; margin: 0; padding: 0; }
+.nav__links a {
+  position: relative; display: inline-block;
+  font-size: .8125rem; letter-spacing: .18em; text-transform: uppercase; text-decoration: none;
+  padding: .75rem 0; color: var(--muted); transition: color .2s var(--ease-out);
+}
+.nav__links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: .45rem; height: 1px; background: var(--mauve);
+  scale: 0 1; transform-origin: right; transition: scale .4s var(--ease-out);
+}
+.nav__links a:hover { color: var(--ink); }
+.nav__links a:hover::after { scale: 1 1; transform-origin: left; }
+
+/* ---------- Hero: fles centraal, titel eromheen ---------- */
+.hero {
+  position: relative; isolation: isolate; min-height: 100svh; overflow: hidden;
+  display: grid; grid-template-rows: 1fr auto; padding: 5.5rem var(--gutter) 0;
+}
+.hero::before { /* gloed achter de fles */
+  content: ""; position: absolute; z-index: -2; left: 50%; top: 46%; width: min(70vw, 820px); aspect-ratio: 1;
+  translate: -50% -50%; background: radial-gradient(closest-side, rgb(168 107 148 / .38), rgb(58 31 51 / .25) 55%, transparent);
+}
+.hero__smoke {
+  position: absolute; z-index: -1; left: 50%; top: 50%; width: min(85vw, 1000px); height: auto;
+  opacity: .34; pointer-events: none; will-change: transform;
+  /* randen zacht laten uitlopen: geen harde rand waar de foto stopt */
+  -webkit-mask-image: radial-gradient(closest-side, #000 45%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 45%, transparent 100%);
+  translate: calc(-50% + var(--mx, 0) * 30px) calc(-55% + var(--sy, 0) * .25px);
+  animation: drift 24s cubic-bezier(.45, 0, .55, 1) infinite alternate;
+}
+@keyframes drift { from { transform: rotate(-5deg) scale(1); } to { transform: rotate(6deg) scale(1.15); } }
+.hero__stage { position: relative; display: grid; place-items: center; width: 100%; max-width: 1500px; margin: 0 auto; }
+.hero__title {
+  --base: 450ms; --gap: clamp(8rem, 25vw, 24rem);
+  position: relative; z-index: 1; width: 100%; margin: 0;
+  display: grid; grid-template-columns: 1fr var(--gap) 1fr; grid-template-areas: "a . b" "c . d"; row-gap: .08em;
+  font: 400 clamp(3rem, 7vw, 8rem)/.98 var(--serif); letter-spacing: -.03em;
+}
+.hero__title .split { white-space: nowrap; }
+.t1 { grid-area: a; justify-self: end; } .t2 { grid-area: b; justify-self: start; }
+.t3 { grid-area: c; justify-self: end; } .t4 { grid-area: d; justify-self: start; }
+.hero__bottle {
+  position: absolute; z-index: 2; left: 50%; top: 50%;
+  height: min(62svh, 580px); aspect-ratio: 376 / 720; will-change: transform;
+  translate: calc(-50% + var(--mx, 0) * -22px) calc(-50% + var(--my, 0) * -14px + var(--sy, 0) * -.18px);
+  rotate: calc(22deg + var(--mx, 0) * 7deg + var(--sy, 0) * .025deg);
+}
+.hero__bottle img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 40px 40px rgb(0 0 0 / .55)); }
+.js .hero__bottle img { opacity: 0; translate: 0 22%; rotate: -16deg; transition: opacity 1.2s var(--ease-out) .25s, translate 1.8s var(--ease-expo) .25s, rotate 1.8s var(--ease-expo) .25s; }
+.hero-in .hero__bottle img { opacity: 1; translate: 0 0; rotate: 0deg; }
+.hero__bar {
+  display: grid; grid-template-columns: 1fr 1.4fr auto; align-items: center; gap: 1.5rem 3rem;
+  width: 100%; max-width: var(--max); margin: 0 auto; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line);
+}
+.hero__bar .kicker, .hero__sub { margin: 0; }
+.hero__sub { font-size: clamp(1rem, 1.3vw, 1.2rem); color: var(--muted); }
+.js .hero__in {
+  opacity: 0; translate: 0 18px;
+  transition: opacity 1s var(--ease-out), translate 1s var(--ease-out);
+  transition-delay: calc(150ms + var(--d, 0) * 90ms);
+}
+.hero-in .hero__in { opacity: 1; translate: 0 0; }
+
+/* Video-bediening (sfeerblok) */
+.video-toggle {
+  position: absolute; right: .75rem; bottom: .75rem; width: 44px; height: 44px;
+  display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%;
+  background: rgb(20 16 19 / .6); color: var(--ink); cursor: pointer;
+  transition: background-color .2s var(--ease-out);
+}
+.video-toggle:hover { background: rgb(20 16 19 / .9); }
+.video-toggle svg { width: 16px; height: 16px; fill: currentColor; }
+.video-toggle .i-play, .video-toggle[aria-pressed="true"] .i-pause { display: none; }
+.video-toggle[aria-pressed="true"] .i-play { display: block; }
+
+/* ---------- Band (snelheid via JS) ---------- */
+.band { border-block: 1px solid var(--line); overflow: hidden; padding: 1.2rem 0; }
+.band__track {
+  display: flex; width: max-content; gap: 2.25rem; align-items: center; padding-left: 2.25rem;
+  font: 400 clamp(1.75rem, 3.2vw, 2.75rem)/1 var(--serif);
+  animation: marquee 48s linear infinite; will-change: transform;
+}
+.band-js .band__track { animation: none; }
+.band__track i { font-style: normal; color: var(--camel); font-size: .55em; }
+@keyframes marquee { to { translate: -50% 0; } }
+
+/* ---------- Verhaal ---------- */
+.story {
+  display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center;
+  max-width: var(--max); margin: 0 auto; padding: clamp(5rem, 11vw, 9rem) var(--gutter);
+}
+.story__img {
+  --q: clamp(0, calc(var(--p, 1) * 2.6 - .4), 1);
+  position: relative; aspect-ratio: 4 / 5; overflow: hidden;
+  clip-path: inset(calc((1 - var(--q)) * 100%) 0 0 0);
+}
+.story__img img { will-change: scale, translate; width: 100%; height: 100%; object-fit: cover; scale: calc(1.35 - var(--q) * .35); translate: 0 calc((var(--p, .5) - .5) * -50px); }
+.story__num {
+  position: absolute; left: 1rem; bottom: .25rem; font: italic 400 clamp(4rem, 9vw, 8rem)/1 var(--serif);
+  color: transparent; -webkit-text-stroke: 1px var(--camel);
+}
+.story__body { max-width: 56ch; color: var(--muted); }
+
+/* ---------- Citaat: woorden lichten op tijdens scrollen ---------- */
+/* Geen foto: een mauve spotlight die opengaat tijdens het scrollen + reusachtig aanhalingsteken */
+.quote { position: relative; isolation: isolate; display: grid; place-items: center; min-height: 85svh; padding: 6rem var(--gutter); overflow: hidden; text-align: center; background: var(--black); }
+.quote::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 50%; width: min(120vw, 1400px); aspect-ratio: 1.6;
+  translate: -50% -50%; will-change: transform, opacity;
+  background: radial-gradient(closest-side, rgb(168 107 148 / .42), rgb(58 31 51 / .5) 45%, transparent 100%);
+  transform: scale(calc(.55 + var(--p, 1) * .6)); opacity: clamp(0, calc(var(--p, 1) * 2.2 - .2), 1);
+}
+.quote blockquote { position: relative; margin: 0; }
+.quote blockquote::before {
+  content: "“"; position: absolute; z-index: -1; left: 50%; top: 0;
+  font: 400 clamp(16rem, 34vw, 32rem)/1 var(--serif); color: transparent; -webkit-text-stroke: 1px rgb(176 141 87 / .45);
+  translate: -50% calc(-38% + (var(--p, .5) - .5) * -120px); pointer-events: none;
+}
+.quote p { font: 400 clamp(2.75rem, 7.5vw, 7rem)/1 var(--serif); letter-spacing: -.025em; max-width: 15ch; margin: 0 auto; text-wrap: balance; }
+.sw { opacity: clamp(.1, calc((var(--p, 1) * 2.2 - .55 - var(--k, 0)) * 7), 1); }
+
+/* ---------- Geuren: 3D-kaarten ---------- */
+.scents { max-width: var(--max); margin: 0 auto; padding: clamp(5rem, 11vw, 9rem) var(--gutter); }
+.scents__head { max-width: 44rem; margin-bottom: 3.5rem; }
+.cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2vw, 1.75rem); }
+.card { position: relative; display: flex; flex-direction: column; perspective: 900px; }
+.js .card.reveal { opacity: 1; translate: none; filter: none; }
+.card__img {
+  position: relative; aspect-ratio: 4 / 5; margin-bottom: 1.5rem; overflow: hidden;
+  background: radial-gradient(70% 55% at 50% 58%, #5A3350 0%, var(--plum) 55%, #2C1727 100%);
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .6s var(--ease-out);
+}
+.card__img::before, .card__img::after { content: ""; position: absolute; inset: 0; pointer-events: none; transition: opacity .6s var(--ease-out); opacity: 0; }
+.card__img::before { background: radial-gradient(75% 65% at 50% 62%, var(--tone), transparent 72%); }
+.card__img::after { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 40%), rgb(239 232 228 / .18), transparent 42%); }
+.card:hover .card__img::before { opacity: .95; }
+.card:hover .card__img::after { opacity: 1; }
+.card__img img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  scale: 1.45; rotate: -6deg;
+  transform: translate(calc((var(--gx, 50%) - 50%) * -.08), 0);
+  transition: rotate .7s var(--ease-out), translate 1.2s var(--ease-expo), transform .6s var(--ease-out);
+}
+.card:hover .card__img img { rotate: -13deg; transform: translate(calc((var(--gx, 50%) - 50%) * -.08), -12px); }
+.js .card .card__img { clip-path: inset(100% 0 0 0); transition: clip-path 1.2s var(--ease-curtain) calc(var(--i) * .12s), transform .6s var(--ease-out); }
+.js .card.in .card__img { clip-path: inset(0 0 0 0); }
+.js .card img { translate: 0 35%; }
+.js .card.in img { translate: 0 0; transition-delay: 0s, calc(var(--i) * .12s + .15s), 0s; }
+.js .card > :not(.card__img) { opacity: 0; translate: 0 14px; transition: opacity .8s var(--ease-out), translate .8s var(--ease-out); transition-delay: calc(var(--i) * .12s + .45s); }
+.js .card.in > :not(.card__img) { opacity: 1; translate: 0 0; }
+.card__idx { position: absolute; top: .9rem; left: 1rem; font: italic 400 1.1rem/1 var(--serif); color: var(--camel); }
+.card h3 { font: 400 2.25rem/1 var(--serif); margin: 0 0 .75rem; }
+.card p { color: var(--muted); margin-bottom: .75rem; }
+.card .notes { margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--line);
+  font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--camel); }
+.scents__foot { margin: 3rem 0 0; text-align: center; font-size: .8125rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- Sfeerblok: vastgepind. Video staat vast; JS zet --c (zin, klok, geurnoten) ---------- */
+.mood { position: relative; height: 220svh; }
+.mood__stick { position: sticky; top: 0; height: 100svh; overflow: hidden; isolation: isolate; }
+.mood__bg { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; will-change: scale; scale: calc(1.3 - var(--p, 1) * .3); }
+.mood__stick::before { /* gloed rond de video */
+  content: ""; position: absolute; z-index: -2; right: 0; top: 50%; width: min(80vw, 1000px); aspect-ratio: 1;
+  translate: 25% -50%; background: radial-gradient(closest-side, rgb(188 133 169 / .32), transparent);
+}
+.mood__stick::after { /* leesbaarheid links */
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to right, rgb(20 16 19 / .75), transparent 55%);
+  opacity: var(--c, 1);
+}
+
+/* Video zonder kader: groot, loopt tot de rand, linkerrand lost op in de achtergrond */
+.mood__media {
+  position: absolute; top: 0; left: 0; margin: 0; z-index: 0;
+  width: calc(100svh * 9 / 16); height: 100svh; transform-origin: 50% 50%; will-change: transform;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 45%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 45%);
+}
+.mood__media video { width: 100%; height: 100%; object-fit: cover; }
+
+/* Tekst links onder; "middernacht." loopt over de vervaagde rookrand */
+.mood__text {
+  position: absolute; z-index: 2; left: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter))); bottom: clamp(2rem, 9vh, 6rem);
+}
+.mood__line { font: 400 clamp(3rem, 10.5vw, 11.5rem)/.9 var(--serif); letter-spacing: -.035em; margin: 0; text-shadow: 0 2px 30px rgb(20 16 19 / .6); }
+.mood__line .word { white-space: nowrap; }
+.l { /* enkel opacity + translate (geen blur, dus geen lag) */
+  --t: clamp(0, calc((var(--c, 1) * 1.15 - var(--k, 0)) * 6), 1);
+  display: inline-block; opacity: var(--t); translate: 0 calc((1 - var(--t)) * .5em);
+}
+
+/* Klok: 23:57 → 00:00 terwijl je scrollt */
+.mood__clock {
+  margin: 0 0 1.25rem; display: inline-flex; align-items: center; gap: .75rem;
+  font: 500 .875rem/1 var(--sans); letter-spacing: .3em; color: var(--camel); font-variant-numeric: tabular-nums;
+  opacity: clamp(0, calc(var(--c, 1) * 4), 1);
+}
+.mood__clock::before { content: ""; width: 2.5rem; height: 1px; background: currentColor; }
+.mood.is-midnight .mood__clock { color: var(--mauve); }
+
+/* Geurnoten verticaal langs de rechterrand */
+.mood__notes {
+  position: absolute; z-index: 2; right: clamp(.75rem, 2vw, 2rem); top: 50%;
+  writing-mode: vertical-rl; rotate: 180deg; translate: 0 -50%; margin: 0;
+  font: 500 .75rem/1 var(--sans); letter-spacing: .4em; text-transform: uppercase; color: var(--ink);
+  text-shadow: 0 1px 12px rgb(20 16 19 / .9);
+  opacity: clamp(0, calc(var(--c, 1) * 3 - 1.2), .85);
+}
+.mood__toggle { position: absolute; z-index: 3; right: clamp(.75rem, 2vw, 2rem); bottom: 1.25rem; }
+
+/* ---------- CTA ---------- */
+.cta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start;
+  max-width: var(--max); margin: 0 auto; padding: clamp(5rem, 11vw, 9rem) var(--gutter);
+}
+.cta__text > p:not(.kicker):not(.small) { color: var(--muted); max-width: 46ch; }
+.cta__form { background: var(--plum); padding: clamp(1.5rem, 3vw, 2.5rem); min-height: 22rem; box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(0 0 0 / .7); }
+
+/* MailerLite-formulier in merkstijl.
+   Hun CSS gebruikt #mlb2-ID + !important → wij prefixen met #inschrijven en een extra klasse. */
+#inschrijven .cta__form .ml-form-embedContainer,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody { background: transparent !important; border: 0 !important; padding: 0 !important; max-width: none !important; width: 100% !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper * { font-family: var(--sans) !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedContent h4 { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 2rem !important; color: var(--ink) !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input {
+  background-color: var(--bg) !important; color: var(--ink) !important; border: 1px solid rgb(239 232 228 / .3) !important;
+  border-radius: 0 !important; min-height: 48px !important; font-size: 1rem !important; padding: 12px 14px !important;
+  transition: border-color .2s var(--ease-out);
+}
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input:focus { border-color: var(--camel) !important; outline: 2px solid var(--camel) !important; outline-offset: 1px !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input::placeholder { color: rgb(239 232 228 / .45) !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label p,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description p { color: var(--muted) !important; font-size: .875rem !important; line-height: 1.5 !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow input[type=checkbox] { accent-color: var(--mauve); width: 20px !important; height: 20px !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button.primary {
+  background-color: var(--mauve) !important; color: var(--black) !important; border: 0 !important; border-radius: 0 !important;
+  min-height: 52px !important; font-weight: 600 !important; letter-spacing: .18em !important; text-transform: uppercase !important;
+  transition: background-color .25s var(--ease-out), transform .12s var(--ease-out);
+}
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button.primary:hover { background-color: var(--ink) !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button.primary:active { transform: scale(.98); }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper p,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper label { color: var(--muted) !important; }
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-successContent h4,
+#inschrijven .cta__form .ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedContent h4 { color: var(--ink) !important; }
+#inschrijven .cta__form .ml-form-embedContainer a { color: var(--mauve) !important; }
+
+/* ---------- Footer ---------- */
+.footer { border-top: 1px solid var(--line); padding: 3rem var(--gutter) 2.5rem; max-width: var(--max); margin: 0 auto; overflow: hidden; }
+.footer__big { font: 400 clamp(2.5rem, 10vw, 9.5rem)/.95 var(--serif); letter-spacing: -.035em; color: var(--plum); margin: 0 0 3rem; padding-right: .12em; white-space: nowrap; }
+.footer__big em { color: var(--mauve); }
+.footer__top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem 3rem; }
+.footer__logo { font: 400 2rem/1 var(--serif); margin: 0; }
+.footer__logo span { font: 500 .75rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-left: .75rem; vertical-align: middle; }
+.footer__links { display: flex; gap: 1.5rem; list-style: none; margin: 0 0 0 auto; padding: 0; }
+.footer__links a { display: inline-block; padding: .6rem 0; font-size: .8125rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s var(--ease-out); }
+.footer__links a:hover { color: var(--ink); }
+.privacy { margin: 2.5rem 0 0; border-top: 1px solid var(--line); }
+.privacy summary { cursor: pointer; padding: 1rem 0; min-height: 44px; font-size: .8125rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.privacy__body { max-width: 62ch; font-size: .9375rem; color: var(--muted); padding-bottom: 1rem; }
+.footer__legal { margin: 2rem 0 0; font-size: .8125rem; color: rgb(239 232 228 / .55); }
+
+/* ---------- Responsief ---------- */
+@media (max-width: 960px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .story, .cta { grid-template-columns: 1fr; }
+  .story__img { max-width: 32rem; }
+}
+@media (max-width: 760px) {
+  .nav__links { display: none; }
+  /* Mobiel: fles boven, titel eronder (tekst nooit over de fles) */
+  .hero { padding-top: 4.75rem; min-height: 0; }
+  .hero__stage { display: flex; flex-direction: column; gap: 1.25rem; padding-bottom: 1.5rem; }
+  .hero__bottle { position: relative; left: auto; top: auto; order: -1; height: 46svh; translate: none; rotate: 22deg; }
+  .hero__title { --base: 300ms; grid-template-columns: auto auto; grid-template-areas: "a b" "c d"; justify-content: center; column-gap: .25em; font-size: clamp(2.4rem, 11.5vw, 3.6rem); }
+  .hero__bar { grid-template-columns: 1fr; gap: 1rem; }
+  .hero .btn { width: 100%; }
+  .mood { height: 200svh; }
+  /* gsm: video schuift naar boven, linkerrand-vervaging wordt onderrand-vervaging */
+  .mood__media {
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 30%);
+    mask-image: linear-gradient(to top, transparent 0%, #000 30%);
+  }
+  .mood__stick::after { background: linear-gradient(to top, rgb(20 16 19 / .8), transparent 45%); }
+  .mood__stick::before { right: 50%; top: 35%; translate: 50% -50%; }
+  .mood__text { bottom: 1.5rem; right: var(--gutter); }
+  .mood__line { font-size: clamp(2.5rem, 11.5vw, 3.6rem); }
+  .mood__notes { top: 5.5rem; translate: none; }
+  .mood__toggle { bottom: auto; top: 4.75rem; right: auto; left: var(--gutter); }
+  .card h3 { font-size: 1.75rem; }
+}
+@media (max-width: 480px) {
+  .cards { gap: 1.5rem .75rem; }
+  .card .notes { letter-spacing: .1em; }
+  .nav .btn--sm { padding-inline: .9rem; letter-spacing: .12em; }
+}
+
+/* ---------- Minder beweging: eindtoestanden, geen ambient motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+  .hero__smoke { animation: none; }
+  .js .wi { translate: none; rotate: none; }
+  .js .hero__in, .js .reveal, .js .card > :not(.card__img), .js .hero__bottle img { opacity: 1; translate: none; rotate: none; filter: none; }
+  .js .card .card__img { clip-path: none; }
+  .js .card img { translate: none; }
+  .card__img { transform: none; }
+}

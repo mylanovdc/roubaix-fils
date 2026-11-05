@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roubaix &amp; Fils · Niet voor iedereen</title>
+<meta name="description" content="Vier niche-geuren voor wie geen kopie draagt. Noir, Amber, Iris en Sage. Zet je op de lijst en ruik ze als eerste.">
+<meta name="theme-color" content="#24131F">
+<meta property="og:title" content="Roubaix &amp; Fils · Niet voor iedereen">
+<meta property="og:description" content="Vier niche-geuren voor wie geen kopie draagt. Zet je op de lijst en ruik ze als eerste.">
+<meta property="og:image" content="assets/hero_poster.webp">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2324131F'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-size='30' fill='%23A86B94'%3ER%26F%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/dmserif-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/dmserif-400i.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/spacegrotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/hero_noir.webp" as="image">
+<script>
+  // Vóór de eerste paint: JS-klasse + intro (1× per sessie, niet bij minder beweging)
+  (function (h) {
+    h.classList.add('js');
+    try {
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('rf-intro')) h.classList.add('intro-on');
+    } catch (e) {}
+  })(document.documentElement);
+</script>
+<link rel="stylesheet" href="style.css?v=7">
+<!-- MailerLite Universal -->
+<script>
+(function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);},l=d.createElement(e),l.async=1,l.src=u,n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+ml('account', '2768697');
+</script>
+<script src="main.js?v=7" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Naar de inhoud</a>
+
+<!-- Intro-gordijn -->
+<div class="intro" id="intro" aria-hidden="true">
+  <p class="intro__line"><span>Niet</span> <span>voor</span> <em>iedereen.</em></p>
+  <span class="intro__brand">Roubaix &amp; Fils</span>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+<canvas class="smoke" id="smoke" aria-hidden="true"></canvas>
+
+<header class="nav" id="nav">
+  <a class="nav__logo" href="#top" aria-label="Roubaix &amp; Fils, naar boven">R<em>&amp;</em>F</a>
+  <nav aria-label="Hoofdmenu">
+    <ul class="nav__links">
+      <li><a href="#verhaal">Verhaal</a></li>
+      <li><a href="#geuren">Geuren</a></li>
+    </ul>
+  </nav>
+  <a class="btn btn--sm" href="#inschrijven" data-magnet>Zet je op de lijst</a>
+</header>
+
+<main id="main">
+
+  <!-- HERO: fles centraal, titel eromheen (ref. NOIRÉA) -->
+  <section class="hero" id="top" data-scroll>
+    <img class="hero__smoke" src="assets/rook_alpha.webp" alt="" width="1000" height="1286" fetchpriority="low">
+    <div class="hero__stage">
+      <h1 class="hero__title">
+        <span class="split t1">Niet voor</span>
+        <span class="split t2">iedereen.</span>
+        <em class="split t3">Dat is</em>
+        <em class="split t4">het punt.</em>
+      </h1>
+      <div class="hero__bottle">
+        <img src="assets/hero_noir.webp" alt="Fles Noir van Roubaix &amp; Fils, schuin in beeld" width="376" height="720" fetchpriority="high">
+      </div>
+    </div>
+    <div class="hero__bar">
+      <p class="kicker hero__in" style="--d:6">Roubaix &amp; Fils · Parfum</p>
+      <p class="hero__sub hero__in" style="--d:7">Vier geuren voor wie geen kopie draagt. Binnenkort.</p>
+      <a class="btn hero__in" style="--d:8" href="#inschrijven" data-magnet>Zet je op de lijst</a>
+    </div>
+  </section>
+
+  <div class="band" aria-hidden="true">
+    <div class="band__track" id="bandTrack">
+      <span>Noir</span><i>✶</i><span>Amber</span><i>✶</i><span>Iris</span><i>✶</i><span>Sage</span><i>✶</i><span><em>Niet voor iedereen</em></span><i>✶</i>
+      <span>Noir</span><i>✶</i><span>Amber</span><i>✶</i><span>Iris</span><i>✶</i><span>Sage</span><i>✶</i><span><em>Niet voor iedereen</em></span><i>✶</i>
+    </div>
+  </div>
+
+  <!-- VERHAAL -->
+  <section class="story" id="verhaal" aria-labelledby="verhaal-t" data-scroll>
+    <div class="story__img">
+      <img src="assets/sfeer_noir.webp" alt="De fles Noir met roze Roubaix &amp; Fils-label op een donkere achtergrond" width="1024" height="1024" loading="lazy" decoding="async">
+      <span class="story__num" aria-hidden="true">01</span>
+    </div>
+    <div class="story__text">
+      <p class="kicker reveal">Het verhaal</p>
+      <h2 id="verhaal-t" class="h2 reveal-words"><span class="split">De vader maakte parfum zoals het hoorde.</span> <em class="split">De zoon niet.</em></h2>
+      <div class="story__body">
+        <p class="reveal" style="--i:1">In een atelier in het noorden maakte een vader geuren die iedereen mooi vond. Netjes. Veilig. Gemaakt om niemand te storen.</p>
+        <p class="reveal" style="--i:2">Zijn zoon hield van andere dingen: rook die blijft hangen in een jas, leer dat warm wordt op de huid, de stad na sluitingstijd.</p>
+        <p class="reveal" style="--i:3">Roubaix &amp; Fils is wat er gebeurt als de zoon het atelier overneemt. Zelfde vakmanschap, andere regels. Geen designerlijn, geen gezicht op de fles. Alleen geuren met karakter, voor wie dat ook heeft.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote" aria-label="Citaat" data-scroll>
+    <blockquote><p class="scrub">“Draag wat <em>niemand anders</em> durft.”</p></blockquote>
+  </section>
+
+  <!-- GEUREN -->
+  <section class="scents" id="geuren" aria-labelledby="geuren-t">
+    <header class="scents__head">
+      <p class="kicker reveal">De collectie</p>
+      <h2 id="geuren-t" class="h2 reveal-words"><span class="split">Vier karakters.</span> <em class="split">Geen compromis.</em></h2>
+    </header>
+    <ul class="cards">
+      <li class="card reveal" style="--i:0;--tone:#6E6873">
+        <div class="card__img"><img src="assets/fles_noir.webp" alt="Fles Noir" width="800" height="800" loading="lazy" decoding="async"></div>
+        <span class="card__idx" aria-hidden="true">I</span>
+        <h3>Noir</h3>
+        <p>Ruikt naar de nacht die je niet navertelt.</p>
+        <p class="notes">Rook · leer · zwarte peper</p>
+      </li>
+      <li class="card reveal" style="--i:1;--tone:#7A4A16">
+        <div class="card__img"><img src="assets/fles_amber.webp" alt="Fles Amber" width="800" height="800" loading="lazy" decoding="async"></div>
+        <span class="card__idx" aria-hidden="true">II</span>
+        <h3>Amber</h3>
+        <p>Warm. Niet zacht.</p>
+        <p class="notes">Hars · tabak · wierook</p>
+      </li>
+      <li class="card reveal" style="--i:2;--tone:#5B3A78">
+        <div class="card__img"><img src="assets/fles_iris.webp" alt="Fles Iris" width="800" height="800" loading="lazy" decoding="async"></div>
+        <span class="card__idx" aria-hidden="true">III</span>
+        <h3>Iris</h3>
+        <p>Koel aan de oppervlakte. Aards eronder.</p>
+        <p class="notes">Iriswortel · vetiver · natte aarde</p>
+      </li>
+      <li class="card reveal" style="--i:3;--tone:#3E4A38">
+        <div class="card__img"><img src="assets/fles_sage.webp" alt="Fles Sage" width="800" height="800" loading="lazy" decoding="async"></div>
+        <span class="card__idx" aria-hidden="true">IV</span>
+        <h3>Sage</h3>
+        <p>Ruikt naar de weg die niet op de kaart staat.</p>
+        <p class="notes">Salie · den · natte steen</p>
+      </li>
+    </ul>
+    <p class="scents__foot reveal">Extrait de Parfum · 50 ml · binnenkort verkrijgbaar</p>
+  </section>
+
+  <!-- SFEERBLOK: vastgepind. Video vast rechts, zin + klok lopen naar middernacht -->
+  <section class="mood" aria-label="Campagnevideo" data-scroll>
+    <div class="mood__stick" id="moodStick">
+      <img class="mood__bg" src="assets/mood_ambient.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async">
+      <figure class="mood__media" id="moodMedia">
+        <video id="moodVideo" src="assets/rf_video.mp4" poster="assets/video_poster.webp"
+               muted loop playsinline preload="none" width="720" height="1280"
+               aria-label="Campagnevideo: paarse rook barst open rond de fles Noir. Eindigt op: Niet voor iedereen."></video>
+      </figure>
+      <p class="mood__notes" aria-hidden="true">Noir · Rook · Leer · Zwarte peper</p>
+      <div class="mood__text">
+        <p class="mood__clock" aria-hidden="true"><span id="moodClock">23:57:00</span></p>
+        <p class="mood__line"><span class="letters">Gemaakt</span><br><span class="letters">voor</span> <em class="letters">na</em><br><em class="letters">middernacht.</em></p>
+      </div>
+      <button class="video-toggle mood__toggle" id="videoToggle" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3v14H7zM14 5h3v14h-3z"/><path class="i-play" d="M8 5v14l11-7z"/></svg>
+        <span class="sr">Speel video af</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="inschrijven" aria-labelledby="cta-t">
+    <div class="cta__text">
+      <p class="kicker reveal">De lijst</p>
+      <h2 id="cta-t" class="h2 reveal-words"><span class="split">Ruik het</span> <em class="split">als eerste.</em></h2>
+      <p class="reveal" style="--i:1">Roubaix &amp; Fils is nog niet te koop. Wie op de lijst staat, hoort als eerste wanneer het zover is, en welke geur bij hem past.</p>
+      <p class="small reveal" style="--i:2">Geen spam. Uitschrijven kan altijd.</p>
+    </div>
+    <div class="cta__form reveal" style="--i:1">
+      <div class="ml-embedded" data-form="LnCWjS"></div>
+      <noscript><p>Het formulier heeft JavaScript nodig. <a href="https://preview.mailerlite.io/forms/2768697/203327077567431894/share">Open het formulier apart.</a></p></noscript>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p class="footer__big" aria-hidden="true">Niet voor <em>iedereen.</em></p>
+  <div class="footer__top">
+    <p class="footer__logo">R<em>&amp;</em>F <span>Roubaix &amp; Fils</span></p>
+    <ul class="footer__links">
+      <!-- TODO: echte Instagram-URL invullen zodra het account bestaat -->
+      <li><a href="https://www.instagram.com/" rel="noopener">Instagram</a></li>
+      <li><a href="#privacy">Privacyverklaring</a></li>
+    </ul>
+  </div>
+
+  <details class="privacy" id="privacy">
+    <summary>Privacyverklaring</summary>
+    <div class="privacy__body">
+      <p>We gebruiken je voornaam en e-mailadres alleen om je te mailen over Roubaix &amp; Fils. We delen ze met niemand. Uitschrijven kan altijd via de link onderaan elke mail.</p>
+      <p>Je inschrijving loopt via MailerLite. Je zet zelf het vinkje en bevestigt daarna via e-mail (double opt-in). We vragen niet meer dan nodig: voornaam en e-mailadres.</p>
+      <p>Deze site zet zelf geen tracking-cookies. Het formulier wordt geladen via MailerLite. Lettertypes staan op de site zelf, niet bij Google.</p>
+      <p>Roubaix &amp; Fils is een fictief merk voor een schoolopdracht.</p>
+    </div>
+  </details>
+
+  <p class="footer__legal">© 2026 Roubaix &amp; Fils · Fictief merk, schoolproject Arteveldehogeschool (Creative Automation)</p>
+</footer>
+</body>
+</html>
