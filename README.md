@@ -7,4 +7,4 @@ One pager voor **Roubaix & Fils**, een **fictief** niche-parfummerk. Schoolproje
 - Lettertypes (DM Serif Display, Space Grotesk) staan lokaal, niet via Google Fonts
 - Respecteert `prefers-reduced-motion`
 
-Live: GitHub Pages (branch `main`, map `/`).
+Live: https://mylanovdc.github.io/roubaix-fils/
